@@ -24,6 +24,7 @@ namespace ATMConsoleApp.UI
 
                 isPrompt = false;
                 ConsoleKeyInfo inputKey = Console.ReadKey(true);
+                
 
                 if (inputKey.Key == ConsoleKey.Enter)
                 {
@@ -42,6 +43,7 @@ namespace ATMConsoleApp.UI
                 if (inputKey.Key == ConsoleKey.Backspace && input.Length > 0)
                 {
                     input.Remove(input.Length - 1, 1);
+                    Console.Write("\b \b");
                 }
                 else if (inputKey.Key != ConsoleKey.Backspace)
                 {
