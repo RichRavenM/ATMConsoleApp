@@ -6,7 +6,7 @@ namespace ATMConsoleApp
     {
         static void Main(string[] args)
         {
-             
+              
         }
     }
 }
