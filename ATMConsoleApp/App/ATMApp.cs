@@ -24,19 +24,50 @@ namespace ATMConsoleApp
         {
             bool isCorrectLogin = false;
 
-            UserAccount tempUserAccount = new UserAccount();
-            tempUserAccount.CardNumber = Validator.Convert<long>("your card number");
-            tempUserAccount.CardPin = Convert.ToInt32(Utility.GetSecretInput("Enter your PIN:"));
-
-            Console.WriteLine("We are checking your card number and pin...");
-            int timer = 10;
-            for (int i = 0; i < timer; i++)
+            while (!isCorrectLogin)
             {
-                Console.Write(".");
-                Thread.Sleep(200);
-            }
-            Console.Clear();
+                UserAccount inputAccount = AppScreen.UserLoginForm();
+                AppScreen.LoginProcess();
+                foreach (UserAccount acc in userAccounts)
+                {
+                    selectedAccount = acc;
+                    if (inputAccount.CardNumber.Equals(selectedAccount.CardNumber))
+                    {
+                        selectedAccount.TotalLogin++;
+                        if (inputAccount.CardPin.Equals(selectedAccount.CardPin))
+                        {
+                            selectedAccount = acc;
 
+                            if (selectedAccount.IsLocked || selectedAccount.TotalLogin > 3)
+                            {
+                                AppScreen.PrintLockScreen();
+                            }
+                            else
+                            {
+                                selectedAccount.TotalLogin = 0;
+                                isCorrectLogin = true; 
+                                break;
+                            }
+                        }
+                    }
+                    if (isCorrectLogin == false)
+                    {
+                        Utility.PrintMessage("\nInvalid card number or PIN", false);
+                        selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
+                        if (selectedAccount.IsLocked)
+                        {
+                            AppScreen.PrintLockScreen();
+                        }
+                    }
+                    Console.Clear();
+                }
+            }
+        }
+
+
+        public void Welcome()
+        {
+            Console.WriteLine($"Welcome back {selectedAccount.FullName}");
         }
 
     }

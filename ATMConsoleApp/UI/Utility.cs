@@ -73,6 +73,16 @@ namespace ATMConsoleApp.UI
             return Console.ReadLine();
         }
 
+        public static void PrintDotAnimation(int timer)
+        {
+            for (int i = 0; i < timer; i++)
+            {
+                Console.Write(".");
+                Thread.Sleep(200);
+            }
+            Console.Clear();
+        }
+
         public static void PressEnterToContinue()
         {
             Console.WriteLine("\n\nPress Enter to continue\n");
