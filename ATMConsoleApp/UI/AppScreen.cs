@@ -36,18 +36,44 @@ namespace ATMConsoleApp.UI
             return tempUserAccount;
         }
 
-        internal static void LoginProcess() 
+        internal static void LoginProcess()
         {
             Console.WriteLine("\nWe are checking your card number and pin...");
             Utility.PrintDotAnimation(10);
         }
 
-        internal static void PrintLockScreen() 
+        internal static void PrintLockScreen()
         {
             Console.Clear();
             Utility.PrintMessage("Your account is locked. Please visit your local branch to unlock your account.", false);
             Utility.PressEnterToContinue();
             Environment.Exit(1);
+        }
+
+        internal static void WelcomeCustomer(string fullName)
+        {
+            Console.WriteLine($"Welcome back {fullName}");
+            Utility.PressEnterToContinue();
+        }
+
+        internal static void DisplayAppMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("------- My ATM App Menu -------");
+            Console.WriteLine(":                             :");
+            Console.WriteLine("1. Account Balance            :");
+            Console.WriteLine("2. Deposit Money              :");
+            Console.WriteLine("3. Withdraw Money             :");
+            Console.WriteLine("4. Transfer Money             :");
+            Console.WriteLine("5. Transactions               :");
+            Console.WriteLine("6. Logout                     :");
+        }
+
+        internal static void LogoutProgress()
+        {
+            Console.WriteLine("Thank you for using this ATM Console app");
+            Utility.PrintDotAnimation(10);
+            Console.Clear();
         }
     }
 }

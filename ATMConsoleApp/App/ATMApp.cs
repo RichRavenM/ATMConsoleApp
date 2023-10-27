@@ -1,4 +1,5 @@
 ﻿using ATMConsoleApp.Domain.Entities;
+using ATMConsoleApp.Domain.Enums;
 using ATMConsoleApp.Domain.Interfaces;
 using ATMConsoleApp.UI;
 using System;
@@ -10,6 +11,14 @@ namespace ATMConsoleApp
         private List<UserAccount> userAccounts;
         private UserAccount selectedAccount;
 
+        public void Run()
+        {
+            AppScreen.Welcome();
+            CheckUserCardNumberAndPassword();
+            AppScreen.WelcomeCustomer(selectedAccount.FullName);
+            AppScreen.DisplayAppMenu();
+            ProcessMenuOption();
+        }
         public void InitialiseData()
         {
             userAccounts = new List<UserAccount>
@@ -45,7 +54,7 @@ namespace ATMConsoleApp
                             else
                             {
                                 selectedAccount.TotalLogin = 0;
-                                isCorrectLogin = true; 
+                                isCorrectLogin = true;
                                 break;
                             }
                         }
@@ -64,11 +73,34 @@ namespace ATMConsoleApp
             }
         }
 
-
-        public void Welcome()
+        private void ProcessMenuOption()
         {
-            Console.WriteLine($"Welcome back {selectedAccount.FullName}");
+            switch (Validator.Convert<int>("an option:"))
+            {
+                case (int)AppMenu.CheckBalance:
+                    Console.WriteLine("Checking account balance...");
+                    break;
+                case (int)AppMenu.PlaceDeposit:
+                    Console.WriteLine("Placind deposit...");
+                    break;
+                case (int)AppMenu.MakeWithdrawal:
+                    Console.WriteLine("Making withdrawwal...");
+                    break;
+                case (int)AppMenu.InternalTransfer:
+                    Console.WriteLine("Processing transfer...");
+                    break;
+                case (int)AppMenu.ViewTransaction:
+                    Console.WriteLine("Viewing transactions...");
+                    break;
+                case (int)AppMenu.Logout:
+                    AppScreen.LogoutProgress();
+                    Utility.PrintMessage("You have successfully logged out. Please collect your card.");
+                    Run();
+                    break;
+                default:
+                    Utility.PrintMessage("Invalid input.", false);
+                    break;
+            }
         }
-
     }
 }

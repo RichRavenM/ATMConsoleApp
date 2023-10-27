@@ -11,12 +11,9 @@ namespace ATMConsoleApp.App
     {
         static void Main(string[] args)
         {
-            AppScreen.Welcome();
             ATMApp atmApp = new ATMApp();
             atmApp.InitialiseData();
-            atmApp.CheckUserCardNumberAndPassword();
-            atmApp.Welcome();
-            Utility.PressEnterToContinue();
+            atmApp.Run();
         }
     }
 }
