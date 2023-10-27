@@ -11,6 +11,7 @@ namespace ATMConsoleApp
         private List<UserAccount> userAccounts;
         private UserAccount selectedAccount;
         private List<Transaction> _transactionList;
+        private const decimal minimumKeptAmount = 5;
 
         public void Run()
         {
@@ -63,7 +64,7 @@ namespace ATMConsoleApp
                     }
                     if (isCorrectLogin == false)
                     {
-                        Utility.PrintMessage("\nInvalid card number or PIN", false);
+                        Utility.PrintMessage("\nInvalid card number or PIN.", false);
                         selectedAccount.IsLocked = selectedAccount.TotalLogin == 3;
                         if (selectedAccount.IsLocked)
                         {
@@ -86,7 +87,7 @@ namespace ATMConsoleApp
                     PlaceDeposit();
                     break;
                 case (int)AppMenu.MakeWithdrawal:
-                    Console.WriteLine("Making withdrawwal...");
+                    MakeWithdrawal();
                     break;
                 case (int)AppMenu.InternalTransfer:
                     Console.WriteLine("Processing transfer...");
@@ -128,7 +129,8 @@ namespace ATMConsoleApp
             }
             if (transactionAmount % 5 != 0)
             {
-                Utility.PrintMessage($"Enter deposit amount that is a multiple of 5", false);
+                Utility.PrintMessage($"Enter deposit amount that is a multiple of 5.", false);
+                return;
             }
 
             if (!PreviewBanknoteCount(transactionAmount))
@@ -137,20 +139,66 @@ namespace ATMConsoleApp
                 return;
             }
             //bind transaction details to transaction object
-            InsertTransaction(selectedAccount.Id,TransactionType.Deposit, transactionAmount, "");
+            InsertTransaction(selectedAccount.Id, TransactionType.Deposit, transactionAmount, "");
 
             // update account balance
             selectedAccount.AccountBalance += transactionAmount;
 
             //print success message
-            Utility.PrintMessage($"Your deposit of {Utility.FormatCurrency(transactionAmount)} was successful");
+            Utility.PrintMessage($"Your deposit of {Utility.FormatCurrency(transactionAmount)} was successful.");
 
 
         }
 
         public void MakeWithdrawal()
         {
-            throw new NotImplementedException();
+            var transactionAmount = 0;
+            int selectedAmmount = AppScreen.SelectAmount();
+
+            if (selectedAmmount == -1)
+            {
+                int selectedAccount = AppScreen.SelectAmount();
+            }
+            else if (selectedAmmount != 0)
+            {
+                transactionAmount = selectedAmmount;
+            }
+            else
+            {
+                transactionAmount = Validator.Convert<int>($"amount {AppScreen.currency}");
+            }
+
+            //input validation
+            if (transactionAmount <= 0)
+            {
+                Utility.PrintMessage("Amount needs to be greater than 0. Please try again.", false);
+                return;
+            }
+            if (transactionAmount % 5 != 0)
+            {
+                Utility.PrintMessage($"Enter deposit amount that is a multiple of 5.", false);
+                return;
+            }
+
+            //Business logic validation
+            if (transactionAmount > selectedAccount.AccountBalance)
+            {
+                Utility.PrintMessage($"Insufficient funds. Your balance does not have enough money to withdraw {Utility.FormatCurrency(transactionAmount)}.", false);
+                return;
+            }
+
+            if((selectedAccount.AccountBalance - transactionAmount) < minimumKeptAmount)
+            {
+                Utility.PrintMessage($"Withdrawal failed. Your account needs to have a minimum of {Utility.FormatCurrency(minimumKeptAmount)} after a withdrawal", false);
+                return;
+            }
+
+            //Bind withdrawal details to transactions object
+            InsertTransaction(selectedAccount.Id, TransactionType.Withdrawal, -transactionAmount, "");
+            //update account balance
+            selectedAccount.AccountBalance -= transactionAmount;
+            //success message
+            Utility.PrintMessage($"You have succesfully withdrawn {Utility.FormatCurrency(transactionAmount)}");
         }
 
         private bool PreviewBanknoteCount(int amount)

@@ -76,5 +76,39 @@ namespace ATMConsoleApp.UI
             Utility.PrintDotAnimation(10);
             Console.Clear();
         }
+
+        internal static int SelectAmount()
+        {
+            Console.WriteLine();
+            Console.WriteLine(@"1: {0}5                 4:{0}50 ", currency);
+            Console.WriteLine(@"2: {0}10                5:{0}100", currency);
+            Console.WriteLine(@"3: {0}20                6:{0}200", currency);
+            Console.WriteLine("0: Other");
+            Console.WriteLine();
+
+            int selectedAmount = Validator.Convert<int>("option:");
+
+            switch (selectedAmount)
+            {
+                case 1:
+                    return 5;
+                case 2:
+                    return 10;
+                case 3:
+                    return 20;
+                case 4:
+                    return 50;
+                case 5:
+                    return 100;
+                case 6:
+                    return 200;
+                case 0:
+                    return 0;
+                default:
+                    Utility.PrintMessage("Invalid input. Please try again.", false);
+                    SelectAmount();
+                    return -1;
+            }
+        }
     }
 }
