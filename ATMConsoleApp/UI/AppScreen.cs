@@ -106,7 +106,6 @@ namespace ATMConsoleApp.UI
                     return 0;
                 default:
                     Utility.PrintMessage("Invalid input. Please try again.", false);
-                    SelectAmount();
                     return -1;
             }
         }

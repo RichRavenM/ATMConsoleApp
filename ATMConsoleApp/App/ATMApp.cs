@@ -2,6 +2,7 @@
 using ATMConsoleApp.Domain.Enums;
 using ATMConsoleApp.Domain.Interfaces;
 using ATMConsoleApp.UI;
+using ConsoleTables;
 using System;
 using System.Linq;
 
@@ -25,8 +26,11 @@ namespace ATMConsoleApp
             AppScreen.Welcome();
             CheckUserCardNumberAndPassword();
             AppScreen.WelcomeCustomer(selectedAccount.FullName);
-            AppScreen.DisplayAppMenu();
-            ProcessMenuOption();
+            while (true)
+            {
+                AppScreen.DisplayAppMenu();
+                ProcessMenuOption();
+            }
         }
         public void InitialiseData()
         {
@@ -101,7 +105,7 @@ namespace ATMConsoleApp
                     ProcessInternalTransfer(internalTransfer);
                     break;
                 case (int)AppMenu.ViewTransaction:
-                    Console.WriteLine("Viewing transactions...");
+                    ViewTransaction();
                     break;
                 case (int)AppMenu.Logout:
                     AppScreen.LogoutProgress();
@@ -121,11 +125,11 @@ namespace ATMConsoleApp
 
         public void PlaceDeposit()
         {
-            Console.WriteLine("\n Only multiple of £5 allowed.\n");
+            Console.WriteLine("\nOnly multiple of £5 allowed.\n");
             var transactionAmount = Validator.Convert<int>($"amount: {AppScreen.currency}");
 
             //simulate counting
-            Console.WriteLine("\n Checking and counting bank notes.");
+            Console.WriteLine("\nChecking and counting bank notes.");
             Utility.PrintDotAnimation(10);
             Console.WriteLine("");
 
@@ -165,7 +169,8 @@ namespace ATMConsoleApp
 
             if (selectedAmmount == -1)
             {
-                int selectedAccount = AppScreen.SelectAmount();
+                MakeWithdrawal();
+                return;
             }
             else if (selectedAmmount != 0)
             {
@@ -218,8 +223,8 @@ namespace ATMConsoleApp
             Console.WriteLine("\nSummary:");
             Console.WriteLine("-------");
             Console.WriteLine($"{AppScreen.currency}20 X {twentyNotesCount} = {20 * twentyNotesCount}");
-            Console.WriteLine($"{AppScreen.currency}10 X {tenNotesCount} = {20 * tenNotesCount}");
-            Console.WriteLine($"{AppScreen.currency}5 X {fiveNotesCount} = {20 * fiveNotesCount}");
+            Console.WriteLine($"{AppScreen.currency}10 X {tenNotesCount} = {10 * tenNotesCount}");
+            Console.WriteLine($"{AppScreen.currency}5 X {fiveNotesCount} = {5 * fiveNotesCount}");
             Console.WriteLine($"Total Amount: {Utility.FormatCurrency(amount)}\n\n");
 
             int opt = Validator.Convert<int>("1 to confirm");
@@ -245,7 +250,23 @@ namespace ATMConsoleApp
 
         public void ViewTransaction()
         {
-            throw new NotImplementedException();
+            var filteredTransactionList = _transactionList.Where(t => t.UserBankAccountId == selectedAccount.Id).ToList();
+            //check if there's a transaction
+            if (filteredTransactionList.Count < 1)
+            {
+                Utility.PrintMessage("You have no transactions yet");
+            }
+            else
+            {
+                var table = new ConsoleTable("Id", "Transaction Date", "Type", "Descripton", $"{AppScreen.currency}Amount");
+                foreach (var transaction in filteredTransactionList)
+                {
+                    table.AddRow(transaction.TransactionId, transaction.TransactionDate, transaction.TransactionType, transaction.Description, transaction.TransactionAmount);
+                }
+                table.Options.EnableCount = false;
+                table.Write();
+                Utility.PrintMessage($"You have {filteredTransactionList.Count} transaction(s)");
+            }
         }
 
         private void ProcessInternalTransfer(InternalTransfer internalTransfer)
@@ -269,9 +290,7 @@ namespace ATMConsoleApp
             }
 
             //check recipient account is valid
-            var recipientBankAccount = (from userAcc in userAccounts
-                                        where userAcc.AccountNumber == internalTransfer.RecipientBankAccoutNumber
-                                        select userAcc).FirstOrDefault();
+            var recipientBankAccount = userAccounts.Where(x => x.AccountNumber == internalTransfer.RecipientBankAccoutNumber).FirstOrDefault();
 
             if (recipientBankAccount == null)
             {
