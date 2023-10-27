@@ -9,6 +9,7 @@ namespace ATMConsoleApp.UI
 {
     public static class AppScreen
     {
+        internal const string currency = "£";
         internal static void Welcome()
         {
             //clears the console screen

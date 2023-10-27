@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,13 @@ namespace ATMConsoleApp.UI
 {
     public static class Utility
     {
+        private static long transactionId;
+        private static CultureInfo culture = new CultureInfo("en-GB");
+        
+        public static long GetTransactionId()
+        {
+            return ++transactionId;
+        }
         public static string GetSecretInput(string prompt)
         {
             bool isPrompt = true;
@@ -24,7 +32,7 @@ namespace ATMConsoleApp.UI
 
                 isPrompt = false;
                 ConsoleKeyInfo inputKey = Console.ReadKey(true);
-                
+
 
                 if (inputKey.Key == ConsoleKey.Enter)
                 {
@@ -91,5 +99,9 @@ namespace ATMConsoleApp.UI
             Console.ReadKey();
         }
 
+        public static string FormatCurrency(decimal balance)
+        {
+            return String.Format(culture, "{0:C2}", balance);
+        }
     }
 }
